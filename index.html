@@ -669,6 +669,7 @@
             if (rawProfile.immunefi) {
                 aggregated.platforms_active.push('Immunefi');
                 aggregated.total_earnings += rawProfile.immunefi.earnings;
+                aggregated.immunefi_earnings = rawProfile.immunefi.earnings; // Track individual earnings
                 
                 const immunefiFindings = rawProfile.immunefi.findings;
                 aggregated.findings_by_severity.critical += (immunefiFindings.bbp?.critical || 0) + (immunefiFindings.audit_comps?.critical || 0);
@@ -685,6 +686,7 @@
             if (rawProfile.cantina) {
                 aggregated.platforms_active.push('Cantina');
                 aggregated.total_earnings += rawProfile.cantina.earnings;
+                aggregated.cantina_earnings = rawProfile.cantina.earnings; // Track individual earnings
                 aggregated.total_findings += rawProfile.cantina.findings || 0;
                 aggregated.cantina_rank = rawProfile.cantina.rank;
                 aggregated.competitions.push(...(rawProfile.cantina.competitions || []));
@@ -813,9 +815,36 @@
                         <div class="text-6xl font-bold gradient-text">$${profile.total_earnings.toLocaleString()}</div>
                         <div class="text-xl text-gray-600 mt-2">Total Earnings</div>
                     </div>
-                    <p class="text-gray-600 mt-4">${profile.seniority.reasoning}</p>
                 </div>
-                <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+                <!-- Per-Platform Earnings Breakdown -->
+                <div class="mb-10 max-w-xl mx-auto">
+                    <div class="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border-2 border-gray-200">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-4 text-center">EARNINGS BY PLATFORM</h3>
+                        <div class="space-y-3">
+                            ${profile.platforms_active.includes('Immunefi') ? `
+                                <div class="flex justify-between items-center p-3 bg-sky-50 rounded-lg border border-sky-200">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-block px-2 py-1 rounded text-xs font-bold bg-sky-600 text-white">Immunefi</span>
+                                        ${profile.immunefi_rank ? `<span class="text-sm text-gray-600">(Rank: ${profile.immunefi_rank})</span>` : ''}
+                                    </div>
+                                    <span class="font-bold text-sky-700">$${(profile.immunefi_earnings || 0).toLocaleString()}</span>
+                                </div>
+                            ` : ''}
+                            ${profile.platforms_active.includes('Cantina') ? `
+                                <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-block px-2 py-1 rounded text-xs font-bold bg-purple-600 text-white">Cantina</span>
+                                        ${profile.cantina_rank ? `<span class="text-sm text-gray-600">(Rank: ${profile.cantina_rank})</span>` : ''}
+                                    </div>
+                                    <span class="font-bold text-purple-700">$${(profile.cantina_earnings || 0).toLocaleString()}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
                     <!-- Platforms -->
                     <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl border-2 border-purple-200">
                         <div class="text-3xl font-bold text-purple-600">${profile.platforms_active.length}</div>
